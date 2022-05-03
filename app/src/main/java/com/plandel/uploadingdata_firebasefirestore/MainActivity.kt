@@ -52,6 +52,28 @@ class MainActivity : AppCompatActivity() {
             val person = getOldPerson()
             deletePerson(person)
         }
+
+        binding.buttonBatched.setOnClickListener {
+            changeName("PJuEOGVM6u3gpC6GMEdW","Elon","Musk")
+        }
+    }
+
+    private fun changeName(
+        personId: String,
+        newFirstName: String,
+        newLastName: String
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            Firebase.firestore.runBatch { batch ->
+                val personRef = personCollectionRef.document(personId)
+                batch.update(personRef,"firstName",newFirstName)
+                batch.update(personRef,"lastName", newLastName)
+            }.await()
+        }catch (e: Exception){
+            withContext(Dispatchers.Main){
+                Toast.makeText(this@MainActivity,e.message,Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun getNewPersonMap(): Map<String, Any> {
