@@ -25,6 +25,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        subscribeToRealtimeUpdates()
+
         binding.buttonSave.setOnClickListener {
             val firstName = binding.editFirstName.text.toString()
             val lastName = binding.editLastName.text.toString()
@@ -33,10 +35,29 @@ class MainActivity : AppCompatActivity() {
             savePerson(person)
         }
 
-        binding.buttonRetrieve.setOnClickListener {
-            retrievePersons()
+//        binding.buttonRetrieve.setOnClickListener {
+//            retrievePersons()
+//        }
+    }
+
+    private fun subscribeToRealtimeUpdates() {
+        personCollectionRef.addSnapshotListener{querySnapshot, firebaseFirestoreException ->
+            firebaseFirestoreException?.let {
+                Toast.makeText(this,it.message,Toast.LENGTH_SHORT).show()
+                return@addSnapshotListener
+            }
+            querySnapshot?.let {
+                val sb = StringBuilder()
+                for (document in it) {
+                    val person = document.toObject<Person>()
+                    sb.append("${person}\n")
+                }
+                binding.textData.text = sb.toString()
+            }
+
         }
     }
+
 
     private fun savePerson(person: Person) = CoroutineScope(Dispatchers.IO).launch {
         try {
