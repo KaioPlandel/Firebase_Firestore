@@ -2,6 +2,7 @@ package com.plandel.uploadingdata_firebasefirestore
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -19,13 +20,16 @@ class MainActivity : AppCompatActivity() {
 
     private val personCollectionRef = Firebase.firestore.collection("persons")
     lateinit var binding: ActivityMainBinding
+    companion object {
+        val TAG = "TAG"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        subscribeToRealtimeUpdates()
+        //subscribeToRealtimeUpdates()
 
         binding.buttonSave.setOnClickListener {
             val firstName = binding.editFirstName.text.toString()
@@ -35,9 +39,9 @@ class MainActivity : AppCompatActivity() {
             savePerson(person)
         }
 
-//        binding.buttonRetrieve.setOnClickListener {
-//            retrievePersons()
-//        }
+        binding.buttonRetrieve.setOnClickListener {
+            retrievePersons()
+        }
     }
 
     private fun subscribeToRealtimeUpdates() {
@@ -73,12 +77,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun retrievePersons() = CoroutineScope(Dispatchers.IO).launch {
+        val fromAge = binding.editNumber1.text.toString().toInt()
+        val toAge = binding.editNumber2.text.toString().toInt()
         try {
-            val querySnapshot = personCollectionRef.get().await()
+            val querySnapshot = personCollectionRef
+                .whereGreaterThan("age",fromAge)
+                .whereLessThan("age",toAge)
+                .orderBy("age")
+                .get()
+                .await()
+
             val sb = StringBuilder()
 
             for (document in querySnapshot) {
                 val person = document.toObject<Person>()
+                Log.d(TAG, "subscribeToRealtimeUpdates: " + person.firstName)
                 sb.append("${person}\n")
             }
 
