@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -45,6 +46,11 @@ class MainActivity : AppCompatActivity() {
             val oldPerson = getOldPerson()
             val newPersonMap = getNewPersonMap()
             updatePerson(oldPerson,newPersonMap)
+        }
+
+        binding.buttonDelete.setOnClickListener {
+            val person = getOldPerson()
+            deletePerson(person)
         }
     }
 
@@ -93,6 +99,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun deletePerson(person: Person) = CoroutineScope(Dispatchers.IO).launch {
+        val personQuery = personCollectionRef
+            .whereEqualTo("firstName",person.firstName)
+            .whereEqualTo("lastName",person.lastName)
+            .whereEqualTo("age",person.age)
+            .get()
+            .await()
+        if(personQuery.documents.isNotEmpty()){
+            for (document in personQuery){
+                try {
+                    personCollectionRef.document(document.id).delete().await()
+//                    personCollectionRef.document(document.id).update(mapOf(
+//                        "firstName" to FieldValue.delete()
+//                    ))
+                }catch (e: Exception){
+                    Toast.makeText(this@MainActivity,"No person matched the query",Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     private fun getOldPerson(): Person{
         val firstName = binding.editFirstName.text.toString()
         val lastName = binding.editLastName.text.toString()
@@ -117,7 +144,6 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-
 
     private fun savePerson(person: Person) = CoroutineScope(Dispatchers.IO).launch {
         try {
