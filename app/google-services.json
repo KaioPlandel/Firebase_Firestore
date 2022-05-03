@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "916942507043",
+    "project_id": "uploading-data-fb823",
+    "storage_bucket": "uploading-data-fb823.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:916942507043:android:3537049240f43335c23596",
+        "android_client_info": {
+          "package_name": "com.plandel.uploadingdata_firebasefirestore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "916942507043-qfe93j9jbf153gn80qjm4vs702ufb9i5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzdKaADIFr_B-PgQXFmRhOc35pZdN0jvA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "916942507043-qfe93j9jbf153gn80qjm4vs702ufb9i5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
